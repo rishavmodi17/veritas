@@ -26,7 +26,8 @@ EVAL_FILE = "hotpot_eval.json"
 N_EVAL = 500
 N_UNANS = 100
 
-QDRANT_URL = "http://localhost:6333"   # Qdrant server running in Docker
+QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+
 COLLECTION = "hotpot"
 
 CANDIDATES_K = 20   # how many docs hybrid search returns before re-ranking
