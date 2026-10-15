@@ -9,9 +9,9 @@ torch
 python-dotenv
 langchain-google-genai
 langchain-groq
-langchain-mistralai
 langchain-tavily
 langchain-core
 qdrant-client
 fastembed
 tqdm
+streamlit
