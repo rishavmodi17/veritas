@@ -1,0 +1,17 @@
+datasets
+langchain
+langchain-community
+langchain-huggingface
+langgraph
+sentence-transformers
+transformers
+torch
+python-dotenv
+langchain-google-genai
+langchain-groq
+langchain-mistralai
+langchain-tavily
+langchain-core
+qdrant-client
+fastembed
+tqdm

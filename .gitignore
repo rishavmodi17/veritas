@@ -1,0 +1,23 @@
+data/
+.env
+__pycache__/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+self_rag_env/
+venv/
+.venv/
+
+# Local databases and generated data
+qdrant_storage/
+chroma_db/
+*.log
