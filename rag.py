@@ -9,6 +9,7 @@ from fastembed import SparseTextEmbedding
 from fastembed.rerank.cross_encoder import TextCrossEncoder
 from qdrant_client import QdrantClient, models
 from langsmith import traceable
+import streamlit as st
 
 # ---------------------------------------------------------------- models
 # Must be the same model that was used on Kaggle to create the stored vectors.
@@ -26,7 +27,10 @@ EVAL_FILE = "hotpot_eval.json"
 N_EVAL = 500
 N_UNANS = 100
 
-QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
+QDRANT_URL = st.secrets.get(
+    "QDRANT_URL",
+    os.getenv("QDRANT_URL", "http://localhost:6333")
+)
 
 COLLECTION = "hotpot"
 
