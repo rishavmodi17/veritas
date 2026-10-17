@@ -115,7 +115,13 @@ _client = None
 def get_client():
     global _client
     if _client is None:
-        _client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, timeout=120)
+        try:
+            url = st.secrets["QDRANT_URL"]
+            key = st.secrets["QDRANT_API_KEY"]
+        except Exception:
+            url = os.getenv("QDRANT_URL", "http://localhost:6333")
+            key = os.getenv("QDRANT_API_KEY")
+        _client = QdrantClient(url=url.rstrip("/"), api_key=key, timeout=120)
     return _client
 
 
