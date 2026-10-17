@@ -18,7 +18,7 @@ import time
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
- 
+import os
 import pandas as pd
 import streamlit as st
 from langgraph.types import Command
@@ -135,11 +135,22 @@ def load_backend():
  
 @st.cache_data(ttl=60, show_spinner=False)
 def qdrant_probe():
-    """Light HTTP health check — no models loaded."""
+    """Light HTTP health check, no models loaded."""
     try:
         import urllib.request
-        req = urllib.request.Request(f"{QDRANT_HTTP}/collections/{COLLECTION_NAME}")
-        with urllib.request.urlopen(req, timeout=2) as resp:
+        try:
+            url = st.secrets["QDRANT_URL"]
+        except Exception:
+            url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        try:
+            key = st.secrets["QDRANT_API_KEY"]
+        except Exception:
+            key = os.getenv("QDRANT_API_KEY")
+        headers = {"api-key": key} if key else {}
+        req = urllib.request.Request(
+            f"{url.rstrip('/')}/collections/{COLLECTION_NAME}", headers=headers
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
             payload = json.loads(resp.read().decode())
         n = payload.get("result", {}).get("points_count")
         return True, int(n) if n is not None else None
