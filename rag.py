@@ -106,12 +106,24 @@ def load_documents():
 _client = None
 
 
+
 def get_client():
-    """One shared client that talks to the Qdrant server running in Docker."""
+    """One shared client for local Docker or Qdrant Cloud."""
     global _client
     if _client is None:
-        _client = QdrantClient(url=QDRANT_URL, prefer_grpc=True, timeout=120)
+        QDRANT_API_KEY = st.secrets.get(
+            "QDRANT_API_KEY",
+            os.getenv("QDRANT_API_KEY")
+        )
+
+        _client = QdrantClient(
+            url=QDRANT_URL,
+            api_key=QDRANT_API_KEY,
+            prefer_grpc=False,
+            timeout=120
+        )
     return _client
+
 
 
 # ---------------------------------------------------------- retrieval
