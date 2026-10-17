@@ -27,10 +27,15 @@ EVAL_FILE = "hotpot_eval.json"
 N_EVAL = 500
 N_UNANS = 100
 
-QDRANT_URL = st.secrets.get(
-    "QDRANT_URL",
-    os.getenv("QDRANT_URL", "http://localhost:6333")
-)
+
+def _secret(name, default=None):
+    try:
+        return st.secrets[name]
+    except Exception:
+        return os.getenv(name, default)
+
+QDRANT_URL = _secret("QDRANT_URL", "http://localhost:6333")
+QDRANT_API_KEY = _secret("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6N2QwMzEwNzEtNzA0My00YmUxLThkYjktNmExYTRlZDRkYWIzIn0.g2pH0Um-pLn1nsldYOT7gAdmnYqa4uK6C5mPYXsrwG8")
 
 COLLECTION = "hotpot"
 
@@ -108,20 +113,9 @@ _client = None
 
 
 def get_client():
-    """One shared client for local Docker or Qdrant Cloud."""
     global _client
     if _client is None:
-        QDRANT_API_KEY = st.secrets.get(
-            "QDRANT_API_KEY",
-            os.getenv("QDRANT_API_KEY")
-        )
-
-        _client = QdrantClient(
-            url=QDRANT_URL,
-            api_key=QDRANT_API_KEY,
-            prefer_grpc=False,
-            timeout=120
-        )
+        _client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY, timeout=120)
     return _client
 
 
