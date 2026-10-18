@@ -862,3 +862,18 @@ page = st.navigation({
     ],
 })
 page.run()
+
+st.markdown(
+    """
+    <hr style="margin-top:3rem; border:none; border-top:1px solid #2a2d36;">
+    <div style="text-align:center; color:#6b7280; font-size:0.85rem; padding:1rem 0 2rem 0;">
+        Made by
+        <a href="https://www.linkedin.com/in/rishav-modi-738524412/"
+           target="_blank" rel="noopener noreferrer"
+           style="color:#c9ccd6; text-decoration:underline; text-underline-offset:3px;">
+           Rishav
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
