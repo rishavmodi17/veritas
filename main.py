@@ -15,7 +15,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command, interrupt
 
 
-load_dotenv()  # loads your API key from .env
+load_dotenv()
 
 # ---------------------------------------------------------------- LLM
 llm_small = ChatGroq(model="openai/gpt-oss-20b", temperature=0,max_retries=10, reasoning_effort="low")
@@ -57,7 +57,7 @@ class GraphState(TypedDict, total=False):
 def stream_text(text: str):
     """Send a finished answer to the output stream in small chunks."""
     writer = get_stream_writer()
-    for piece in re.findall(r"\S+\s*", text):   # keeps spaces and newlines
+    for piece in re.findall(r"\S+\s*", text): 
         writer({"token": piece})
 
 
@@ -67,14 +67,14 @@ def build_sources(docs: list[Document]) -> list[dict]:
     sources, seen = [], set()
     for d in docs:
         meta = d.metadata
-        if meta.get("source") == "tavily":          # web result: real URL
+        if meta.get("source") == "tavily":          
             url = meta.get("url", "")
             if not url:
                 continue
             key = url
             source = {"title": meta.get("title") or url, "url": url,
                       "type": "web", "snippet": ""}
-        else:                                       # Qdrant (HotpotQA) document: no URL exists
+        else:                                       
             title = meta.get("title", "")
             if not title:
                 continue
@@ -157,9 +157,9 @@ class RewrittenQuestion(BaseModel):
             "question. Preserve the exact meaning and intent. "
             "Do not change what the user is asking."))
 
-# ================================================================
-# STRUCTURED LLMs
-# ================================================================
+
+# ----------------------------------------------STRUCTURED LLMs
+
 input_guard_llm = llm_small.with_structured_output(InputGuardDecision,method="json_schema",
     strict=True,)
 
@@ -444,7 +444,6 @@ def human_review(state: GraphState) -> dict:
     if reply.lower() in ("", "yes", "y", "approve"):
         return {"human_decision": "approve"}
 
-    # anything else is the human's own improved question
     return {"human_decision": "approve", "question": reply}
 # ---------------------------------------------------------------- routing
 
@@ -559,11 +558,11 @@ graph = builder.compile(checkpointer=InMemorySaver())
 
 def run(question: str):
     config = {
-        "configurable": {"thread_id": str(uuid.uuid4())},   # new random ID for each question
+        "configurable": {"thread_id": str(uuid.uuid4())},   
         "recursion_limit": 50,
     }
     inputs = {"question": question}
-    path = []          # nodes the graph visited
+    path = []          
     answer_parts = []
     sources = []
 

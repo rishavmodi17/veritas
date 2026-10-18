@@ -12,7 +12,6 @@ from langsmith import traceable
 import streamlit as st
 
 # ---------------------------------------------------------------- models
-# Must be the same model that was used on Kaggle to create the stored vectors.
 embedding_model = HuggingFaceEmbeddings(
     model_name="BAAI/bge-base-en-v1.5",
     encode_kwargs={"normalize_embeddings": True, "batch_size": 64},
@@ -27,25 +26,13 @@ EVAL_FILE = "hotpot_eval.json"
 N_EVAL = 500
 N_UNANS = 100
 
-
-def _secret(name, default=None):
-    try:
-        return st.secrets[name]
-    except Exception:
-        return os.getenv(name, default)
-
-QDRANT_URL = _secret("QDRANT_URL", "http://localhost:6333")
-QDRANT_API_KEY = _secret("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIiwic3ViamVjdCI6ImFwaS1rZXk6N2QwMzEwNzEtNzA0My00YmUxLThkYjktNmExYTRlZDRkYWIzIn0.g2pH0Um-pLn1nsldYOT7gAdmnYqa4uK6C5mPYXsrwG8")
-
 COLLECTION = "hotpot"
 
-CANDIDATES_K = 20   # how many docs hybrid search returns before re-ranking
-FINAL_K = 5         # how many docs are kept after re-ranking
+CANDIDATES_K = 20   
+FINAL_K = 5         
 
 
-# ---------------------------------------------------------------- data loading
-# NOTE: the vector database is already built (507,294 points).
-# These two functions are not used by the app. Do not call them.
+# ----------------------------------------------------------- data loading
 def download_and_save():
     print("Downloading HotpotQA (first run only)...")
     train = load_dataset("hotpotqa/hotpot_qa", "distractor", split="train")
@@ -68,7 +55,6 @@ def download_and_save():
     for i, ex in enumerate(eval_qs):
         gold = sorted(set(ex["supporting_facts"]["title"]))
         unanswerable = i < N_UNANS
-        # Skip answerable questions whose gold paragraphs will be removed from the corpus
         if not unanswerable and set(gold) & unans_gold:
             continue
         eval_rows.append({
@@ -83,12 +69,11 @@ def download_and_save():
     for t in unans_gold:
         paras.pop(t, None)
 
-    # Save to disk
     with open(CORPUS_FILE, "w", encoding="utf-8") as f:
         for title, text in paras.items():
             f.write(json.dumps({
-                "id": str(uuid.uuid5(uuid.NAMESPACE_URL, title)),   # stable id
-                "page_content": f"{title}: {text}",                 # title prefix is embedded with the text
+                "id": str(uuid.uuid5(uuid.NAMESPACE_URL, title)),   
+                "page_content": f"{title}: {text}",                 
                 "metadata": {"title": title, "text": text},
             }, ensure_ascii=False) + "\n")
     with open(EVAL_FILE, "w", encoding="utf-8") as f:
@@ -110,8 +95,6 @@ def load_documents():
 # ---------------------------------------------------------- vector database
 _client = None
 
-
-
 def get_client():
     global _client
     if _client is None:
@@ -123,8 +106,6 @@ def get_client():
             key = os.getenv("QDRANT_API_KEY")
         _client = QdrantClient(url=url.rstrip("/"), api_key=key, timeout=120)
     return _client
-
-
 
 # ---------------------------------------------------------- retrieval
 @traceable(name="hybrid_search", run_type="retriever")
