@@ -1,5 +1,6 @@
 # Veritas · Self-RAG
 [![Lint](https://github.com/rishavmodi17/veritas/actions/workflows/lint.yml/badge.svg)](https://github.com/rishavmodi17/veritas/actions/workflows/lint.yml)
+
 A self-correcting RAG system over HotpotQA that routes each question, grades its own evidence, verifies its own answers, and says so when it does not know.
 
 🔗 **Live App:** https://veritas-9nppirqgaitroxnrqm6fbs.streamlit.app
